@@ -101,6 +101,23 @@ st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
 
+/* Neutralize Streamlit's own theme accent (default red
+   #FF4B4B) wherever BaseWeb components reference it via CSS
+   custom property, e.g. the tab active-indicator bar. */
+:root, .stApp {{
+    --primary-color: {LIME} !important;
+}}
+
+/* Confirmed via DevTools inspection: Streamlit's newer Tabs
+   uses React Aria internally, not BaseWeb — the active-tab
+   underline is this exact class, not any data-baseweb attr. */
+.react-aria-SelectionIndicator {{
+    background: transparent !important;
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+}}
+
 html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; }}
 
 .stApp {{
