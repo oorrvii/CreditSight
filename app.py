@@ -434,6 +434,58 @@ div.stButton > button:active {{ transform: translateY(0px); }}
 .legend span {{ display: flex; align-items: center; gap: 0.4rem; }}
 .legend i {{ width: 8px; height: 8px; border-radius: 3px; display: inline-block; }}
 
+/* ---------- What-if simulator ---------- */
+.whatif-result {{
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    margin-top: 0.9rem;
+    padding-top: 1rem;
+    border-top: 1px solid {DIVIDER};
+    flex-wrap: wrap;
+}}
+.whatif-item {{ display: flex; flex-direction: column; }}
+.whatif-arrow {{
+    font-size: 1.3rem;
+    color: {MUTE};
+    font-family: 'Space Grotesk', sans-serif;
+}}
+
+/* ---------- Batch tier / approval bars ---------- */
+.tier-bar {{
+    display: flex;
+    height: 10px;
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    background: {TRACK};
+    margin: 0.9rem 0 0.5rem 0;
+}}
+.tier-seg {{ height: 10px; }}
+
+/* ---------- Streamlit tabs override ---------- */
+.stTabs [data-baseweb="tab-list"] {{
+    gap: 0.4rem;
+    background: transparent;
+}}
+.stTabs [data-baseweb="tab"] {{
+    background: {GLASS};
+    border: 1px solid {CARD_BORDER};
+    border-radius: 12px;
+    color: {SUBTEXT};
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.6rem 1.2rem;
+}}
+.stTabs [aria-selected="true"] {{
+    background: {LIME_SOFT} !important;
+    color: {LIME} !important;
+    border: 1px solid {LIME_GLOW} !important;
+}}
+.stTabs [data-baseweb="tab-highlight"] {{ background: transparent !important; }}
+.stTabs [data-baseweb="tab-border"] {{ display: none; }}
+
 /* ---------- Affordability estimator ---------- */
 .afford-label {{
     font-size: 0.72rem;
@@ -597,231 +649,461 @@ FEATURE_LABELS = {
 }
 
 # =========================================================
-# FORM — full width
+# TABS — separate individual vs. institutional flows so
+# neither page gets cluttered with the other's controls
 # =========================================================
-st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
-st.markdown('<div class="card-eyebrow">01 \u2014 Input</div>', unsafe_allow_html=True)
-st.markdown('<div class="card-title">Your financial behavior</div>', unsafe_allow_html=True)
-st.markdown('<div class="card-desc">Nothing here is stored \u2014 the score is computed live, in this browser session only.</div>', unsafe_allow_html=True)
+tab1, tab2 = st.tabs(["\U0001F9CD Individual Score", "\U0001F3E6 Portfolio Review (Bank / NBFC)"])
 
-st.markdown('<div class="fieldset-label">Personal</div>', unsafe_allow_html=True)
-p1, p2, p3, p4 = st.columns(4)
-with p1:
-    age = st.number_input("Age", min_value=18, max_value=100, value=30)
-with p2:
-    income_level = st.number_input("Monthly income (\u20b9)", min_value=0, value=25000, step=1000)
-with p3:
-    dependents_count = st.number_input("Dependents", min_value=0, max_value=10, value=0)
-with p4:
-    income_unreported = st.selectbox("Income documented?", ["Yes", "No"])
+with tab1:
+    # =========================================================
+    # FORM — full width
+    # =========================================================
+    st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
+    st.markdown('<div class="card-eyebrow">01 \u2014 Input</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">Your financial behavior</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Nothing here is stored \u2014 the score is computed live, in this browser session only.</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="fieldset-label">Credit behavior</div>', unsafe_allow_html=True)
-b1, b2, b3, b4 = st.columns(4)
-with b1:
-    spending_discipline_ratio = st.slider("Credit utilization ratio", 0.0, 1.5, 0.3, help="Portion of available credit currently in use.")
-with b2:
-    income_obligation_ratio = st.slider("Debt-to-income ratio", 0.0, 2.0, 0.3, help="Monthly debt obligations \u00f7 monthly income.")
-with b3:
-    financial_activity_count = st.number_input("Active credit lines / loans", min_value=0, max_value=30, value=3)
-with b4:
-    property_loan_count = st.number_input("Property / real estate loans", min_value=0, max_value=10, value=0)
+    st.markdown('<div class="fieldset-label">Personal</div>', unsafe_allow_html=True)
+    p1, p2, p3, p4 = st.columns(4)
+    with p1:
+        age = st.number_input("Age", min_value=18, max_value=100, value=30)
+    with p2:
+        income_level = st.number_input("Monthly income (\u20b9)", min_value=0, value=25000, step=1000)
+    with p3:
+        dependents_count = st.number_input("Dependents", min_value=0, max_value=10, value=0)
+    with p4:
+        income_unreported = st.selectbox("Income documented?", ["Yes", "No"])
 
-st.markdown('<div class="fieldset-label">Payment history</div>', unsafe_allow_html=True)
-l1, l2, l3 = st.columns(3)
-with l1:
-    payment_irregularity_minor = st.number_input("30\u201359 days late", min_value=0, max_value=20, value=0)
-with l2:
-    payment_irregularity_moderate = st.number_input("60\u201389 days late", min_value=0, max_value=20, value=0)
-with l3:
-    payment_irregularity_severe = st.number_input("90+ days late", min_value=0, max_value=20, value=0)
+    st.markdown('<div class="fieldset-label">Credit behavior</div>', unsafe_allow_html=True)
+    b1, b2, b3, b4 = st.columns(4)
+    with b1:
+        spending_discipline_ratio = st.slider("Credit utilization ratio", 0.0, 1.5, 0.3, help="Portion of available credit currently in use.")
+    with b2:
+        income_obligation_ratio = st.slider("Debt-to-income ratio", 0.0, 2.0, 0.3, help="Monthly debt obligations \u00f7 monthly income.")
+    with b3:
+        financial_activity_count = st.number_input("Active credit lines / loans", min_value=0, max_value=30, value=3)
+    with b4:
+        property_loan_count = st.number_input("Property / real estate loans", min_value=0, max_value=10, value=0)
 
-st.markdown('</div>', unsafe_allow_html=True)
-predict_clicked = st.button("Calculate my score \u2192")
+    st.markdown('<div class="fieldset-label">Payment history</div>', unsafe_allow_html=True)
+    l1, l2, l3 = st.columns(3)
+    with l1:
+        payment_irregularity_minor = st.number_input("30\u201359 days late", min_value=0, max_value=20, value=0)
+    with l2:
+        payment_irregularity_moderate = st.number_input("60\u201389 days late", min_value=0, max_value=20, value=0)
+    with l3:
+        payment_irregularity_severe = st.number_input("90+ days late", min_value=0, max_value=20, value=0)
 
-# =========================================================
-# GAUGE SVG BUILDER
-# =========================================================
-def gauge_svg(score, color):
-    r = 86
-    cx, cy = 118, 112
-    circumference = math.pi * r
-    frac = max(0, min(score, 100)) / 100
-    offset = circumference * (1 - frac)
-    return f"""
-    <div class="gauge-svg-holder">
-    <svg width="236" height="138" viewBox="0 0 236 138">
-        <defs>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="4" result="blur"/>
-                <feMerge>
-                    <feMergeNode in="blur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-        </defs>
-        <path d="M {cx-r} {cy} A {r} {r} 0 0 1 {cx+r} {cy}"
-              fill="none" stroke="{TRACK}" stroke-width="14" stroke-linecap="round"/>
-        <path d="M {cx-r} {cy} A {r} {r} 0 0 1 {cx+r} {cy}"
-              fill="none" stroke="{color}" stroke-width="14" stroke-linecap="round"
-              stroke-dasharray="{circumference:.2f}" stroke-dashoffset="{offset:.2f}"
-              filter="url(#glow)"/>
-    </svg>
-    <div class="gauge-center">
-        <div class="gauge-score" style="color:{color};">{score}</div>
-        <div class="gauge-outof">out of 100</div>
-    </div>
-    </div>
-    """
+    st.markdown('</div>', unsafe_allow_html=True)
+    predict_clicked = st.button("Calculate my score \u2192")
 
-# =========================================================
-# RESULT — full width, below the form
-# =========================================================
-if not predict_clicked:
-    st.markdown(f"""
-    <div class="section-card glass empty-state-slim">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" style="flex-shrink:0;">
-            <circle cx="13" cy="13" r="11.5" stroke="{LIME}" stroke-width="1.5" stroke-dasharray="3 4.2" opacity="0.7"/>
-            <path d="M13 7v6l4 2.5" stroke="{LIME}" stroke-width="1.6" stroke-linecap="round"/>
+    # =========================================================
+    # GAUGE SVG BUILDER
+    # =========================================================
+    def gauge_svg(score, color):
+        r = 86
+        cx, cy = 118, 112
+        circumference = math.pi * r
+        frac = max(0, min(score, 100)) / 100
+        offset = circumference * (1 - frac)
+        return f"""
+        <div class="gauge-svg-holder">
+        <svg width="236" height="138" viewBox="0 0 236 138">
+            <defs>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                    <feMerge>
+                        <feMergeNode in="blur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <path d="M {cx-r} {cy} A {r} {r} 0 0 1 {cx+r} {cy}"
+                  fill="none" stroke="{TRACK}" stroke-width="14" stroke-linecap="round"/>
+            <path d="M {cx-r} {cy} A {r} {r} 0 0 1 {cx+r} {cy}"
+                  fill="none" stroke="{color}" stroke-width="14" stroke-linecap="round"
+                  stroke-dasharray="{circumference:.2f}" stroke-dashoffset="{offset:.2f}"
+                  filter="url(#glow)"/>
         </svg>
-        <div>
-            <div class="card-title" style="font-size:1rem; margin-bottom:0.1rem;">Your result appears here</div>
-            <div class="card-desc" style="margin-bottom:0;">Fill in the form above and calculate to see your score and the signals behind it.</div>
+        <div class="gauge-center">
+            <div class="gauge-score" style="color:{color};">{score}</div>
+            <div class="gauge-outof">out of 100</div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
-else:
-    payment_regularity_score = (
-        payment_irregularity_minor * 1
-        + payment_irregularity_moderate * 2
-        + payment_irregularity_severe * 3
-    )
-    if income_obligation_ratio <= 0.3:
-        income_stability = 0
-    elif income_obligation_ratio <= 0.6:
-        income_stability = 1
-    else:
-        income_stability = 2
-    income_unreported_val = 1 if income_unreported == "No" else 0
+        </div>
+        """
 
-    row = pd.DataFrame([{
-        "spending_discipline_ratio": spending_discipline_ratio,
-        "age": age,
-        "payment_irregularity_minor": payment_irregularity_minor,
-        "payment_irregularity_moderate": payment_irregularity_moderate,
-        "payment_irregularity_severe": payment_irregularity_severe,
-        "income_obligation_ratio": income_obligation_ratio,
-        "income_level": income_level,
-        "income_unreported": income_unreported_val,
-        "financial_activity_count": financial_activity_count,
-        "property_loan_count": property_loan_count,
-        "dependents_count": dependents_count,
-        "payment_regularity_score": payment_regularity_score,
-        "income_stability": income_stability,
-    }])[FEATURE_ORDER]
-
-    proba_default = model.predict_proba(row)[0, 1]
-    credit_score = int(round((1 - proba_default) * 100))
-
-    if credit_score >= 70:
-        risk_label, risk_color, risk_soft = "Low Risk", RISK_LOW, RISK_LOW_SOFT
-    elif credit_score >= 45:
-        risk_label, risk_color, risk_soft = "Moderate Risk", RISK_MED, RISK_MED_SOFT
-    else:
-        risk_label, risk_color, risk_soft = "High Risk", RISK_HIGH, RISK_HIGH_SOFT
-
-    sv = explainer(row)
-
-    gauge_col, signal_col = st.columns([1, 1.7], gap="large")
-
-    with gauge_col:
-        st.markdown('<div class="section-card glass gauge-wrap" style="height:100%;">', unsafe_allow_html=True)
-        st.markdown('<div class="card-eyebrow" style="align-self:flex-start;">02 \u2014 Result</div>', unsafe_allow_html=True)
-        st.markdown(gauge_svg(credit_score, risk_color), unsafe_allow_html=True)
-        st.markdown(f'<span class="risk-pill" style="background:{risk_soft}; color:{risk_color};"><span class="dot" style="background:{risk_color};"></span>{risk_label}</span>', unsafe_allow_html=True)
-        st.markdown(f'<div class="proba-line">Estimated probability of default: <b>{proba_default*100:.1f}%</b></div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with signal_col:
-        values = sv[0].values
-        data_vals = sv[0].data
-        contributions = list(zip(FEATURE_ORDER, values, data_vals))
-        contributions.sort(key=lambda x: abs(x[1]), reverse=True)
-        top_factors = contributions[:6]
-        max_abs = max(abs(v) for _, v, _ in top_factors) or 1.0
-
-        st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title" style="font-size:1.02rem;">Signal breakdown</div>', unsafe_allow_html=True)
+    # =========================================================
+    # RESULT — full width, below the form
+    # =========================================================
+    if not predict_clicked:
         st.markdown(f"""
-        <div class="legend">
-            <span><i style="background:{RISK_LOW};"></i>Decreases risk</span>
-            <span><i style="background:{RISK_HIGH};"></i>Increases risk</span>
+        <div class="section-card glass empty-state-slim">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" style="flex-shrink:0;">
+                <circle cx="13" cy="13" r="11.5" stroke="{LIME}" stroke-width="1.5" stroke-dasharray="3 4.2" opacity="0.7"/>
+                <path d="M13 7v6l4 2.5" stroke="{LIME}" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <div>
+                <div class="card-title" style="font-size:1rem; margin-bottom:0.1rem;">Your result appears here</div>
+                <div class="card-desc" style="margin-bottom:0;">Fill in the form above and calculate to see your score and the signals behind it.</div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
+    else:
+        payment_regularity_score = (
+            payment_irregularity_minor * 1
+            + payment_irregularity_moderate * 2
+            + payment_irregularity_severe * 3
+        )
+        if income_obligation_ratio <= 0.3:
+            income_stability = 0
+        elif income_obligation_ratio <= 0.6:
+            income_stability = 1
+        else:
+            income_stability = 2
+        income_unreported_val = 1 if income_unreported == "No" else 0
 
-        for name, shap_val, raw_val in top_factors:
-            up = shap_val > 0
-            color = RISK_HIGH if up else RISK_LOW
-            pct = (abs(shap_val) / max_abs) * 100
-            label = FEATURE_LABELS.get(name, name)
-            left_bar = f'<div class="bar-fill left" style="width:{pct if not up else 0:.0f}%; background:{RISK_LOW};"></div>' if not up else ""
-            right_bar = f'<div class="bar-fill right" style="width:{pct if up else 0:.0f}%; background:{RISK_HIGH};"></div>' if up else ""
+        row = pd.DataFrame([{
+            "spending_discipline_ratio": spending_discipline_ratio,
+            "age": age,
+            "payment_irregularity_minor": payment_irregularity_minor,
+            "payment_irregularity_moderate": payment_irregularity_moderate,
+            "payment_irregularity_severe": payment_irregularity_severe,
+            "income_obligation_ratio": income_obligation_ratio,
+            "income_level": income_level,
+            "income_unreported": income_unreported_val,
+            "financial_activity_count": financial_activity_count,
+            "property_loan_count": property_loan_count,
+            "dependents_count": dependents_count,
+            "payment_regularity_score": payment_regularity_score,
+            "income_stability": income_stability,
+        }])[FEATURE_ORDER]
+
+        proba_default = model.predict_proba(row)[0, 1]
+        credit_score = int(round((1 - proba_default) * 100))
+
+        if credit_score >= 70:
+            risk_label, risk_color, risk_soft = "Low Risk", RISK_LOW, RISK_LOW_SOFT
+        elif credit_score >= 45:
+            risk_label, risk_color, risk_soft = "Moderate Risk", RISK_MED, RISK_MED_SOFT
+        else:
+            risk_label, risk_color, risk_soft = "High Risk", RISK_HIGH, RISK_HIGH_SOFT
+
+        sv = explainer(row)
+
+        gauge_col, signal_col = st.columns([1, 1.7], gap="large")
+
+        with gauge_col:
+            st.markdown('<div class="section-card glass gauge-wrap" style="height:100%;">', unsafe_allow_html=True)
+            st.markdown('<div class="card-eyebrow" style="align-self:flex-start;">02 \u2014 Result</div>', unsafe_allow_html=True)
+            st.markdown(gauge_svg(credit_score, risk_color), unsafe_allow_html=True)
+            st.markdown(f'<span class="risk-pill" style="background:{risk_soft}; color:{risk_color};"><span class="dot" style="background:{risk_color};"></span>{risk_label}</span>', unsafe_allow_html=True)
+            st.markdown(f'<div class="proba-line">Estimated probability of default: <b>{proba_default*100:.1f}%</b></div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with signal_col:
+            values = sv[0].values
+            data_vals = sv[0].data
+            contributions = list(zip(FEATURE_ORDER, values, data_vals))
+            contributions.sort(key=lambda x: abs(x[1]), reverse=True)
+            top_factors = contributions[:6]
+            max_abs = max(abs(v) for _, v, _ in top_factors) or 1.0
+
+            st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title" style="font-size:1.02rem;">Signal breakdown</div>', unsafe_allow_html=True)
             st.markdown(f"""
-            <div class="signal-row">
-                <div>
-                    <div class="signal-name">{label}</div>
-                    <span class="signal-value">value: {raw_val:.2f}</span>
-                </div>
-                <div class="signal-track">
-                    <div class="track-half left">{left_bar}</div>
-                    <div class="track-half right">{right_bar}</div>
-                </div>
-                <div class="signal-tag" style="background:{color}22; color:{color};">{"+ risk" if up else "\u2212 risk"}</div>
+            <div class="legend">
+                <span><i style="background:{RISK_LOW};"></i>Decreases risk</span>
+                <span><i style="background:{RISK_HIGH};"></i>Increases risk</span>
             </div>
             """, unsafe_allow_html=True)
 
+            for name, shap_val, raw_val in top_factors:
+                up = shap_val > 0
+                color = RISK_HIGH if up else RISK_LOW
+                pct = (abs(shap_val) / max_abs) * 100
+                label = FEATURE_LABELS.get(name, name)
+                left_bar = f'<div class="bar-fill left" style="width:{pct if not up else 0:.0f}%; background:{RISK_LOW};"></div>' if not up else ""
+                right_bar = f'<div class="bar-fill right" style="width:{pct if up else 0:.0f}%; background:{RISK_HIGH};"></div>' if up else ""
+                st.markdown(f"""
+                <div class="signal-row">
+                    <div>
+                        <div class="signal-name">{label}</div>
+                        <span class="signal-value">value: {raw_val:.2f}</span>
+                    </div>
+                    <div class="signal-track">
+                        <div class="track-half left">{left_bar}</div>
+                        <div class="track-half right">{right_bar}</div>
+                    </div>
+                    <div class="signal-tag" style="background:{color}22; color:{color};">{"+ risk" if up else "\u2212 risk"}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        # =====================================================
+        # LOAN AFFORDABILITY ESTIMATOR — full width, uses the
+        # already-computed score + income + obligation ratio
+        # =====================================================
+        if credit_score >= 70:
+            safe_emi_ratio = 0.50
+        elif credit_score >= 45:
+            safe_emi_ratio = 0.35
+        else:
+            safe_emi_ratio = 0.20
+
+        safe_emi_ceiling = income_level * safe_emi_ratio
+        existing_obligation = income_level * income_obligation_ratio
+        available_capacity = max(safe_emi_ceiling - existing_obligation, 0)
+
+        illus_rate_annual = 0.12
+        illus_tenure_months = 36
+        r = illus_rate_annual / 12
+        n = illus_tenure_months
+        if available_capacity > 0:
+            indicative_loan = available_capacity * ((1 + r) ** n - 1) / (r * (1 + r) ** n)
+        else:
+            indicative_loan = 0
+
+        st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
+        st.markdown('<div class="card-eyebrow">03 \u2014 Affordability</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-title" style="font-size:1.05rem;">Indicative loan affordability</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-desc">Based on your risk tier\u2019s safe EMI-to-income ceiling, minus obligations you\u2019ve already reported.</div>', unsafe_allow_html=True)
+
+        a1, a2, a3, a4 = st.columns(4)
+        with a1:
+            st.markdown(f'<div class="afford-label">Safe EMI ceiling</div><div class="afford-num">\u20b9{safe_emi_ceiling:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
+        with a2:
+            st.markdown(f'<div class="afford-label">Already committed</div><div class="afford-num">\u20b9{existing_obligation:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
+        with a3:
+            st.markdown(f'<div class="afford-label">Available capacity</div><div class="afford-num" style="color:{LIME};">\u20b9{available_capacity:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
+        with a4:
+            st.markdown(f'<div class="afford-label">Indicative max loan</div><div class="afford-num" style="color:{LIME};">\u20b9{indicative_loan:,.0f}</div>', unsafe_allow_html=True)
+
+        st.markdown(f'<div class="afford-note">Illustrative only \u2014 assumes {illus_rate_annual*100:.0f}% p.a. interest over {illus_tenure_months} months. Not a loan offer or eligibility guarantee.</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # =====================================================
-    # LOAN AFFORDABILITY ESTIMATOR — full width, uses the
-    # already-computed score + income + obligation ratio
-    # =====================================================
-    if credit_score >= 70:
-        safe_emi_ratio = 0.50
-    elif credit_score >= 45:
-        safe_emi_ratio = 0.35
-    else:
-        safe_emi_ratio = 0.20
+        # =====================================================
+        # WHAT-IF SIMULATOR — same score/row context as above,
+        # lets the user drag the top levers and see the delta
+        # =====================================================
+        st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
+        st.markdown('<div class="card-eyebrow">04 \u2014 Explore</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-title" style="font-size:1.05rem;">What would improve your score?</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-desc">Drag these to see how your score would change \u2014 nothing here affects the result above.</div>', unsafe_allow_html=True)
 
-    safe_emi_ceiling = income_level * safe_emi_ratio
-    existing_obligation = income_level * income_obligation_ratio
-    available_capacity = max(safe_emi_ceiling - existing_obligation, 0)
+        w1, w2, w3 = st.columns(3)
+        with w1:
+            wi_spending = st.slider("Credit utilization ratio", 0.0, 1.5, float(spending_discipline_ratio), key="wi_spending")
+        with w2:
+            wi_obligation = st.slider("Debt-to-income ratio", 0.0, 2.0, float(income_obligation_ratio), key="wi_obligation")
+        with w3:
+            wi_severe = st.number_input("90+ days late", min_value=0, max_value=20, value=int(payment_irregularity_severe), key="wi_severe")
 
-    illus_rate_annual = 0.12
-    illus_tenure_months = 36
-    r = illus_rate_annual / 12
-    n = illus_tenure_months
-    if available_capacity > 0:
-        indicative_loan = available_capacity * ((1 + r) ** n - 1) / (r * (1 + r) ** n)
-    else:
-        indicative_loan = 0
+        wi_regularity_score = (
+            payment_irregularity_minor * 1
+            + payment_irregularity_moderate * 2
+            + wi_severe * 3
+        )
+        if wi_obligation <= 0.3:
+            wi_stability = 0
+        elif wi_obligation <= 0.6:
+            wi_stability = 1
+        else:
+            wi_stability = 2
+
+        wi_row = pd.DataFrame([{
+            "spending_discipline_ratio": wi_spending,
+            "age": age,
+            "payment_irregularity_minor": payment_irregularity_minor,
+            "payment_irregularity_moderate": payment_irregularity_moderate,
+            "payment_irregularity_severe": wi_severe,
+            "income_obligation_ratio": wi_obligation,
+            "income_level": income_level,
+            "income_unreported": income_unreported_val,
+            "financial_activity_count": financial_activity_count,
+            "property_loan_count": property_loan_count,
+            "dependents_count": dependents_count,
+            "payment_regularity_score": wi_regularity_score,
+            "income_stability": wi_stability,
+        }])[FEATURE_ORDER]
+
+        wi_proba = model.predict_proba(wi_row)[0, 1]
+        wi_score = int(round((1 - wi_proba) * 100))
+        delta = wi_score - credit_score
+
+        if delta > 0:
+            delta_color, delta_text = RISK_LOW, f"+{delta}"
+        elif delta < 0:
+            delta_color, delta_text = RISK_HIGH, f"{delta}"
+        else:
+            delta_color, delta_text = MUTE, "0"
+
+        st.markdown(f"""
+        <div class="whatif-result">
+            <div class="whatif-item">
+                <div class="afford-label">Current score</div>
+                <div class="afford-num">{credit_score}</div>
+            </div>
+            <div class="whatif-arrow">\u2192</div>
+            <div class="whatif-item">
+                <div class="afford-label">Simulated score</div>
+                <div class="afford-num" style="color:{delta_color};">{wi_score}</div>
+            </div>
+            <div class="whatif-item">
+                <div class="afford-label">Change</div>
+                <div class="afford-num" style="color:{delta_color};">{delta_text}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+with tab2:
 
     st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
-    st.markdown('<div class="card-eyebrow">03 \u2014 Affordability</div>', unsafe_allow_html=True)
-    st.markdown('<div class="card-title" style="font-size:1.05rem;">Indicative loan affordability</div>', unsafe_allow_html=True)
-    st.markdown('<div class="card-desc">Based on your risk tier\u2019s safe EMI-to-income ceiling, minus obligations you\u2019ve already reported.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-eyebrow">Batch Review</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">Score a portfolio of applicants</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Upload a CSV of applicants to score them all at once, set your own approval threshold, and export the results. Nothing is stored beyond this session.</div>', unsafe_allow_html=True)
 
-    a1, a2, a3, a4 = st.columns(4)
-    with a1:
-        st.markdown(f'<div class="afford-label">Safe EMI ceiling</div><div class="afford-num">\u20b9{safe_emi_ceiling:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
-    with a2:
-        st.markdown(f'<div class="afford-label">Already committed</div><div class="afford-num">\u20b9{existing_obligation:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
-    with a3:
-        st.markdown(f'<div class="afford-label">Available capacity</div><div class="afford-num" style="color:{LIME};">\u20b9{available_capacity:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
-    with a4:
-        st.markdown(f'<div class="afford-label">Indicative max loan</div><div class="afford-num" style="color:{LIME};">\u20b9{indicative_loan:,.0f}</div>', unsafe_allow_html=True)
+    sample_df = pd.DataFrame([
+        {"age": 34, "monthly_income": 28000, "dependents": 1, "income_documented": "Yes",
+         "credit_utilization_ratio": 0.25, "debt_to_income_ratio": 0.30, "active_credit_lines": 3,
+         "property_loans": 0, "late_30_59": 0, "late_60_89": 0, "late_90_plus": 0},
+        {"age": 45, "monthly_income": 19000, "dependents": 3, "income_documented": "No",
+         "credit_utilization_ratio": 0.62, "debt_to_income_ratio": 0.71, "active_credit_lines": 5,
+         "property_loans": 1, "late_30_59": 2, "late_60_89": 1, "late_90_plus": 0},
+    ])
+    sample_csv = sample_df.to_csv(index=False).encode("utf-8")
 
-    st.markdown(f'<div class="afford-note">Illustrative only \u2014 assumes {illus_rate_annual*100:.0f}% p.a. interest over {illus_tenure_months} months. Not a loan offer or eligibility guarantee.</div>', unsafe_allow_html=True)
+    dl1, dl2 = st.columns([1, 3])
+    with dl1:
+        st.download_button("\u2B07 Download CSV template", data=sample_csv, file_name="creditsight_batch_template.csv", mime="text/csv", use_container_width=True)
+
+    uploaded = st.file_uploader("Upload applicant CSV", type=["csv"], label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
+
+    REQUIRED_COLS = [
+        "age", "monthly_income", "dependents", "income_documented",
+        "credit_utilization_ratio", "debt_to_income_ratio", "active_credit_lines",
+        "property_loans", "late_30_59", "late_60_89", "late_90_plus",
+    ]
+
+    if uploaded is not None:
+        parse_failed = False
+        try:
+            batch_df = pd.read_csv(uploaded)
+        except Exception:
+            parse_failed = True
+            batch_df = None
+
+        if parse_failed:
+            st.error("Couldn\u2019t read that file \u2014 make sure it\u2019s a valid CSV.")
+        else:
+            missing = [c for c in REQUIRED_COLS if c not in batch_df.columns]
+            if missing:
+                st.error(f"Missing required column(s): {', '.join(missing)}. Use the template above for the expected format.")
+            else:
+                work = batch_df.copy()
+                work["payment_regularity_score"] = (
+                    work["late_30_59"] * 1 + work["late_60_89"] * 2 + work["late_90_plus"] * 3
+                )
+                work["income_stability"] = pd.cut(
+                    work["debt_to_income_ratio"],
+                    bins=[-0.01, 0.3, 0.6, work["debt_to_income_ratio"].max() + 0.01],
+                    labels=[0, 1, 2],
+                ).astype(int)
+                work["income_unreported"] = (work["income_documented"].astype(str).str.strip().str.lower() == "no").astype(int)
+
+                model_input = pd.DataFrame({
+                    "spending_discipline_ratio": work["credit_utilization_ratio"],
+                    "age": work["age"],
+                    "payment_irregularity_minor": work["late_30_59"],
+                    "payment_irregularity_moderate": work["late_60_89"],
+                    "payment_irregularity_severe": work["late_90_plus"],
+                    "income_obligation_ratio": work["debt_to_income_ratio"],
+                    "income_level": work["monthly_income"],
+                    "income_unreported": work["income_unreported"],
+                    "financial_activity_count": work["active_credit_lines"],
+                    "property_loan_count": work["property_loans"],
+                    "dependents_count": work["dependents"],
+                    "payment_regularity_score": work["payment_regularity_score"],
+                    "income_stability": work["income_stability"],
+                })[FEATURE_ORDER]
+
+                batch_proba = model.predict_proba(model_input)[:, 1]
+                batch_score = ((1 - batch_proba) * 100).round().astype(int)
+
+                results = pd.DataFrame({
+                    "applicant_id": range(1, len(work) + 1),
+                    "score": batch_score,
+                    "default_probability": (batch_proba * 100).round(1),
+                })
+                results["risk_tier"] = pd.cut(
+                    results["score"], bins=[-1, 44, 69, 100], labels=["High Risk", "Moderate Risk", "Low Risk"]
+                )
+
+                # --- summary stats ---
+                st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
+                s1, s2, s3, s4 = st.columns(4)
+                with s1:
+                    st.markdown(f'<div class="afford-label">Applicants scored</div><div class="afford-num">{len(results)}</div>', unsafe_allow_html=True)
+                with s2:
+                    st.markdown(f'<div class="afford-label">Average score</div><div class="afford-num">{results["score"].mean():.0f}</div>', unsafe_allow_html=True)
+                with s3:
+                    low_n = int((results["risk_tier"] == "Low Risk").sum())
+                    st.markdown(f'<div class="afford-label">Low risk</div><div class="afford-num" style="color:{RISK_LOW};">{low_n}</div>', unsafe_allow_html=True)
+                with s4:
+                    high_n = int((results["risk_tier"] == "High Risk").sum())
+                    st.markdown(f'<div class="afford-label">High risk</div><div class="afford-num" style="color:{RISK_HIGH};">{high_n}</div>', unsafe_allow_html=True)
+
+                mod_n = int((results["risk_tier"] == "Moderate Risk").sum())
+                total_n = len(results) or 1
+                st.markdown(f"""
+                <div class="tier-bar">
+                    <div class="tier-seg" style="width:{low_n/total_n*100:.1f}%; background:{RISK_LOW};"></div>
+                    <div class="tier-seg" style="width:{mod_n/total_n*100:.1f}%; background:{RISK_MED};"></div>
+                    <div class="tier-seg" style="width:{high_n/total_n*100:.1f}%; background:{RISK_HIGH};"></div>
+                </div>
+                <div class="legend" style="margin-top:0.5rem; margin-bottom:0;">
+                    <span><i style="background:{RISK_LOW};"></i>Low ({low_n})</span>
+                    <span><i style="background:{RISK_MED};"></i>Moderate ({mod_n})</span>
+                    <span><i style="background:{RISK_HIGH};"></i>High ({high_n})</span>
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+                # --- approval threshold ---
+                st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
+                st.markdown('<div class="card-title" style="font-size:1.02rem;">Approval threshold</div>', unsafe_allow_html=True)
+                st.markdown('<div class="card-desc">Set your own cutoff \u2014 applicants scoring at or above it are marked approved.</div>', unsafe_allow_html=True)
+                threshold = st.slider("Minimum score to approve", 0, 100, 60, label_visibility="collapsed")
+
+                results["decision"] = np.where(results["score"] >= threshold, "Approved", "Declined")
+                approved_n = int((results["decision"] == "Approved").sum())
+                declined_n = total_n - approved_n
+
+                st.markdown(f"""
+                <div class="tier-bar">
+                    <div class="tier-seg" style="width:{approved_n/total_n*100:.1f}%; background:{LIME};"></div>
+                    <div class="tier-seg" style="width:{declined_n/total_n*100:.1f}%; background:{RISK_HIGH};"></div>
+                </div>
+                <div class="legend" style="margin-top:0.5rem; margin-bottom:0;">
+                    <span><i style="background:{LIME};"></i>Approved ({approved_n})</span>
+                    <span><i style="background:{RISK_HIGH};"></i>Declined ({declined_n})</span>
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+                # --- results table ---
+                st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
+                st.markdown('<div class="card-title" style="font-size:1.02rem;">Results</div>', unsafe_allow_html=True)
+                st.dataframe(
+                    results[["applicant_id", "score", "default_probability", "risk_tier", "decision"]],
+                    use_container_width=True,
+                    hide_index=True,
+                )
+                out_csv = results.to_csv(index=False).encode("utf-8")
+                st.download_button("\u2B07 Download scored results", data=out_csv, file_name="creditsight_batch_results.csv", mime="text/csv")
+                st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
 # REGULATORY CONTEXT — static, always visible
