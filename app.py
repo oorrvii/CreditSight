@@ -582,6 +582,13 @@ div[data-testid="stTabs"] [role="tab"]::before {{
 }}
 div[data-testid="stTabs"] [data-baseweb="tab-border"] {{ display: none !important; }}
 div[data-testid="stTabs"] [data-baseweb="tab-panel"] {{ padding-top: 0.5rem !important; }}
+/* Brute-force fallback: hide any element in the tab bar that
+   isn't literally a tab button, whatever its real attribute
+   name turns out to be (catches the active-indicator bar). */
+div[data-testid="stTabs"] [data-baseweb="tab-list"] > *:not([data-baseweb="tab"]):not([role="tab"]) {{
+    display: none !important;
+    height: 0 !important;
+}}
 
 /* ---------- Affordability estimator ---------- */
 .afford-label {{
