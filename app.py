@@ -512,14 +512,17 @@ div[data-testid="stDownloadButton"] > button:hover {{
 
 /* ---------- Streamlit tabs override (pill nav, gradient active state) ---------- */
 div[data-testid="stTabs"] {{ margin-top: 0.4rem; }}
-div[data-testid="stTabs"] [data-baseweb="tab-list"] {{
-    gap: 0.7rem;
-    background: transparent;
-    border-bottom: none;
-    flex-wrap: wrap;
-    padding: 0 0 1.6rem 0;
+div[data-testid="stTabs"] [data-baseweb="tab-list"],
+div[data-testid="stTabs"] [role="tablist"] {{
+    gap: 0.7rem !important;
+    background: transparent !important;
+    border-bottom: none !important;
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+    padding: 0 0 1.6rem 0 !important;
 }}
-div[data-testid="stTabs"] [data-baseweb="tab"] {{
+div[data-testid="stTabs"] [data-baseweb="tab"],
+div[data-testid="stTabs"] [role="tab"] {{
     background: {GLASS} !important;
     border: 1px solid {CARD_BORDER} !important;
     border-radius: 999px !important;
@@ -528,20 +531,26 @@ div[data-testid="stTabs"] [data-baseweb="tab"] {{
     font-weight: 600 !important;
     font-size: 0.88rem !important;
     padding: 0.85rem 2rem !important;
+    min-width: max-content !important;
     white-space: nowrap !important;
     outline: none !important;
     box-shadow: none !important;
     transition: all 0.18s ease !important;
 }}
-div[data-testid="stTabs"] [data-baseweb="tab"] p {{
+div[data-testid="stTabs"] [data-baseweb="tab"] p,
+div[data-testid="stTabs"] [role="tab"] p {{
     display: flex !important;
     align-items: center !important;
     gap: 0.55rem !important;
     margin: 0 !important;
+    white-space: nowrap !important;
 }}
 div[data-testid="stTabs"] [data-baseweb="tab"]:focus,
 div[data-testid="stTabs"] [data-baseweb="tab"]:focus-visible,
-div[data-testid="stTabs"] [data-baseweb="tab"]:active {{
+div[data-testid="stTabs"] [data-baseweb="tab"]:active,
+div[data-testid="stTabs"] [role="tab"]:focus,
+div[data-testid="stTabs"] [role="tab"]:focus-visible,
+div[data-testid="stTabs"] [role="tab"]:active {{
     outline: none !important;
     box-shadow: none !important;
 }}
@@ -553,8 +562,8 @@ div[data-testid="stTabs"] [aria-selected="true"] {{
     box-shadow: 0 8px 22px -10px {LIME_GLOW} !important;
 }}
 div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {{ background: transparent !important; }}
-div[data-testid="stTabs"] [data-baseweb="tab-border"] {{ display: none; }}
-div[data-testid="stTabs"] [data-baseweb="tab-panel"] {{ padding-top: 0.5rem; }}
+div[data-testid="stTabs"] [data-baseweb="tab-border"] {{ display: none !important; }}
+div[data-testid="stTabs"] [data-baseweb="tab-panel"] {{ padding-top: 0.5rem !important; }}
 
 /* ---------- Affordability estimator ---------- */
 .afford-label {{
