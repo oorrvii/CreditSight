@@ -326,24 +326,44 @@ h1, h2, h3 {{ font-family: 'Space Grotesk', sans-serif; }}
 .fieldset-label svg {{ flex-shrink: 0; opacity: 0.85; }}
 
 /* ---------- Streamlit widget overrides ---------- */
-.stSlider label, .stNumberInput label, .stSelectbox label {{
+.stSlider label, .stNumberInput label, .stSelectbox label,
+div[data-testid="stSlider"] label,
+div[data-testid="stNumberInput"] label,
+div[data-testid="stSelectbox"] label {{
     color: {TEXT} !important;
     font-weight: 600 !important;
     font-size: 0.85rem !important;
     font-family: 'Inter', sans-serif !important;
 }}
-.stNumberInput input, div[data-baseweb="select"] > div {{
+.stNumberInput input, div[data-baseweb="select"] > div,
+div[data-testid="stNumberInput"] input,
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {{
     background-color: {INPUT_BG} !important;
     color: {TEXT} !important;
     border: 1px solid {CARD_BORDER} !important;
     border-radius: 10px !important;
 }}
+/* Universal fallback: whatever wrapper class Streamlit actually
+   uses, the visible text on any number/text input must always
+   be readable against the theme, not a stale hardcoded color. */
+input[type="number"], input[type="text"] {{
+    background-color: {INPUT_BG} !important;
+    color: {TEXT} !important;
+    -webkit-text-fill-color: {TEXT} !important;
+}}
+div[data-baseweb="select"] * {{
+    color: {TEXT} !important;
+}}
 div[data-baseweb="popover"] li {{
     background-color: {BG_SOFT} !important;
     color: {TEXT} !important;
 }}
-.stSlider [data-baseweb="slider"] > div > div {{ background: {TRACK} !important; }}
-.stSlider [data-baseweb="slider"] div[role="slider"] {{
+.stSlider [data-baseweb="slider"] > div > div,
+div[data-testid="stSlider"] [data-baseweb="slider"] > div > div {{
+    background: {TRACK} !important;
+}}
+.stSlider [data-baseweb="slider"] div[role="slider"],
+div[data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {{
     background-color: {LIME} !important;
     box-shadow: 0 0 0 5px {LIME_SOFT} !important;
 }}
@@ -1258,13 +1278,16 @@ with tab2:
 # =========================================================
 # REGULATORY CONTEXT — static, always visible
 # =========================================================
-with st.expander("\U0001F4D8 Regulatory context \u2014 RBI Digital Lending Directions, 2025"):
+with st.expander("\U0001F4D8 Regulatory context \u2014 RBI Digital Lending framework"):
     st.markdown(f"""
     <div class="reg-note">
     On 8 May 2025, the RBI consolidated its digital lending rules \u2014 replacing the
     earlier 2022 guidelines and 2023 default-loss-guarantee framework \u2014 into a single
     rulebook: the <b style="color:{TEXT};">RBI (Digital Lending) Directions, 2025</b>.
-    A few provisions relevant to a scoring tool like this one:
+    RBI has continued amending this framework through 2026, including a public DLA
+    registry on its CIMS portal, a multi-lender LSP platform framework (effective
+    November 2025), and further disclosure and collection-conduct updates reported
+    through early-to-mid 2026. A few provisions relevant to a scoring tool like this one:
     </div>
     <ul class="reg-list">
         <li><b>Key Fact Statement (KFS)</b> \u2014 lenders must disclose the full cost of
@@ -1285,7 +1308,8 @@ with st.expander("\U0001F4D8 Regulatory context \u2014 RBI Digital Lending Direc
     <div class="reg-note" style="margin-top:0.8rem;">
     CreditSight is not a Regulated Entity under this
     framework \u2014 shown here for context on how a real alternative-credit product would
-    need to operate. For the official text, see rbi.org.in.
+    need to operate. This framework continues to evolve, so for the current
+    consolidated text, see rbi.org.in.
     </div>
     """, unsafe_allow_html=True)
 
