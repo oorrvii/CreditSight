@@ -561,7 +561,25 @@ div[data-testid="stTabs"] [aria-selected="true"] {{
     font-weight: 700 !important;
     box-shadow: 0 8px 22px -10px {LIME_GLOW} !important;
 }}
-div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {{ background: transparent !important; }}
+div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {{
+    background: transparent !important;
+    background-color: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    height: 0 !important;
+    display: none !important;
+}}
+div[data-testid="stTabs"] [data-baseweb="tab"] [data-baseweb="tab-highlight"] {{
+    display: none !important;
+    height: 0 !important;
+}}
+div[data-testid="stTabs"] [data-baseweb="tab"]::after,
+div[data-testid="stTabs"] [data-baseweb="tab"]::before,
+div[data-testid="stTabs"] [role="tab"]::after,
+div[data-testid="stTabs"] [role="tab"]::before {{
+    display: none !important;
+    content: none !important;
+}}
 div[data-testid="stTabs"] [data-baseweb="tab-border"] {{ display: none !important; }}
 div[data-testid="stTabs"] [data-baseweb="tab-panel"] {{ padding-top: 0.5rem !important; }}
 
