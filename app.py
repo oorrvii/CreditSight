@@ -735,7 +735,7 @@ FEATURE_LABELS = {
 # TABS — separate individual vs. institutional flows so
 # neither page gets cluttered with the other's controls
 # =========================================================
-tab1, tab2 = st.tabs(["\U0001F9CD\u2002Individual Score", "\U0001F3E6\u2002Portfolio Review (Bank / NBFC)"])
+tab1, tab2 = st.tabs(["\U0001F9CD\u2002Individual Score ", "\U0001F3E6\u2002Portfolio Review (Bank / NBFC) "])
 
 with tab1:
     # =========================================================
@@ -778,7 +778,11 @@ with tab1:
         payment_irregularity_severe = st.number_input("90+ days late", min_value=0, max_value=20, value=0)
 
     st.markdown('</div>', unsafe_allow_html=True)
-    predict_clicked = st.button("Calculate my score \u2192")
+
+    if "score_calculated" not in st.session_state:
+        st.session_state.score_calculated = False
+    if st.button("Calculate my score \u2192"):
+        st.session_state.score_calculated = True
 
     # =========================================================
     # GAUGE SVG BUILDER
@@ -830,7 +834,7 @@ with tab1:
     # =========================================================
     # RESULT — full width, below the form
     # =========================================================
-    if not predict_clicked:
+    if not st.session_state.score_calculated:
         st.markdown(f"""
         <div class="section-card glass empty-state-slim">
             <svg width="26" height="26" viewBox="0 0 26 26" fill="none" style="flex-shrink:0;">
