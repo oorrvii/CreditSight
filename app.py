@@ -434,6 +434,51 @@ div.stButton > button:active {{ transform: translateY(0px); }}
 .legend span {{ display: flex; align-items: center; gap: 0.4rem; }}
 .legend i {{ width: 8px; height: 8px; border-radius: 3px; display: inline-block; }}
 
+/* ---------- Affordability estimator ---------- */
+.afford-label {{
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: {MUTE};
+    margin-bottom: 0.3rem;
+}}
+.afford-num {{
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: {TEXT};
+}}
+.afford-num span {{
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: {MUTE};
+    font-family: 'Inter', sans-serif;
+}}
+.afford-note {{
+    font-size: 0.75rem;
+    color: {MUTE};
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid {DIVIDER};
+}}
+
+/* ---------- Regulatory context ---------- */
+.reg-note {{
+    font-size: 0.85rem;
+    color: {SUBTEXT};
+    line-height: 1.55;
+}}
+.reg-list {{
+    margin: 0.9rem 0 0 0;
+    padding-left: 1.1rem;
+    font-size: 0.85rem;
+    color: {SUBTEXT};
+    line-height: 1.7;
+}}
+.reg-list li {{ margin-bottom: 0.5rem; }}
+.reg-list b {{ color: {TEXT}; font-weight: 600; }}
+
 /* ---------- Disclaimer + footer ---------- */
 .disclaimer {{
     padding: 1.05rem 1.35rem;
@@ -736,17 +781,93 @@ else:
 
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # =====================================================
+    # LOAN AFFORDABILITY ESTIMATOR — full width, uses the
+    # already-computed score + income + obligation ratio
+    # =====================================================
+    if credit_score >= 70:
+        safe_emi_ratio = 0.50
+    elif credit_score >= 45:
+        safe_emi_ratio = 0.35
+    else:
+        safe_emi_ratio = 0.20
+
+    safe_emi_ceiling = income_level * safe_emi_ratio
+    existing_obligation = income_level * income_obligation_ratio
+    available_capacity = max(safe_emi_ceiling - existing_obligation, 0)
+
+    illus_rate_annual = 0.12
+    illus_tenure_months = 36
+    r = illus_rate_annual / 12
+    n = illus_tenure_months
+    if available_capacity > 0:
+        indicative_loan = available_capacity * ((1 + r) ** n - 1) / (r * (1 + r) ** n)
+    else:
+        indicative_loan = 0
+
+    st.markdown('<div class="section-card glass">', unsafe_allow_html=True)
+    st.markdown('<div class="card-eyebrow">03 \u2014 Affordability</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-title" style="font-size:1.05rem;">Indicative loan affordability</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-desc">Based on your risk tier\u2019s safe EMI-to-income ceiling, minus obligations you\u2019ve already reported.</div>', unsafe_allow_html=True)
+
+    a1, a2, a3, a4 = st.columns(4)
+    with a1:
+        st.markdown(f'<div class="afford-label">Safe EMI ceiling</div><div class="afford-num">\u20b9{safe_emi_ceiling:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
+    with a2:
+        st.markdown(f'<div class="afford-label">Already committed</div><div class="afford-num">\u20b9{existing_obligation:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
+    with a3:
+        st.markdown(f'<div class="afford-label">Available capacity</div><div class="afford-num" style="color:{LIME};">\u20b9{available_capacity:,.0f}<span>/mo</span></div>', unsafe_allow_html=True)
+    with a4:
+        st.markdown(f'<div class="afford-label">Indicative max loan</div><div class="afford-num" style="color:{LIME};">\u20b9{indicative_loan:,.0f}</div>', unsafe_allow_html=True)
+
+    st.markdown(f'<div class="afford-note">Illustrative only \u2014 assumes {illus_rate_annual*100:.0f}% p.a. interest over {illus_tenure_months} months. Not a loan offer or eligibility guarantee.</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# =========================================================
+# REGULATORY CONTEXT — static, always visible
+# =========================================================
+with st.expander("\U0001F4D8 Regulatory context \u2014 RBI Digital Lending Directions, 2025"):
+    st.markdown(f"""
+    <div class="reg-note">
+    On 8 May 2025, the RBI consolidated its digital lending rules \u2014 replacing the
+    earlier 2022 guidelines and 2023 default-loss-guarantee framework \u2014 into a single
+    rulebook: the <b style="color:{TEXT};">RBI (Digital Lending) Directions, 2025</b>.
+    A few provisions relevant to a scoring tool like this one:
+    </div>
+    <ul class="reg-list">
+        <li><b>Key Fact Statement (KFS)</b> \u2014 lenders must disclose the full cost of
+        credit (APR, fees, penal charges) before a loan is signed, not after.</li>
+        <li><b>Direct disbursal only</b> \u2014 loan funds must move straight between the
+        regulated lender and the borrower's own account, with no pass-through
+        intermediary accounts.</li>
+        <li><b>Cooling-off period</b> \u2014 borrowers can exit a loan shortly after
+        disbursal by repaying principal plus proportionate interest, with no penalty.</li>
+        <li><b>FLDG cap</b> \u2014 default-guarantee arrangements between a lender and its
+        sourcing partner are capped at 5% of the loan portfolio.</li>
+        <li><b>Data minimisation</b> \u2014 only data necessary for the credit decision may
+        be collected, with explicit borrower consent.</li>
+        <li><b>Collection conduct</b> \u2014 recovery calls are restricted to 8am\u20137pm, and
+        contacting a borrower's family or using social media to share default status
+        is prohibited.</li>
+    </ul>
+    <div class="reg-note" style="margin-top:0.8rem;">
+    CreditSight is not a Regulated Entity under this
+    framework \u2014 shown here for context on how a real alternative-credit product would
+    need to operate. For the official text, see rbi.org.in.
+    </div>
+    """, unsafe_allow_html=True)
+
 # =========================================================
 # DISCLAIMER + FOOTER
 # =========================================================
 st.markdown(f"""
 <div class="disclaimer glass">
-    <b>Disclaimer \u2014</b> CreditSight is an academic mini-project demonstrating alternative
-    credit scoring on publicly available, reframed data. It is not a licensed credit
-    bureau product, does not access real financial accounts, and its output should not
-    inform actual lending or borrowing decisions. All calculations run locally in this
-    session; no input is stored or transmitted.
+    <b>Disclaimer \u2014</b> CreditSight is a demonstration of alternative credit scoring
+    built on reframed, publicly available data. It is not a licensed credit bureau
+    product, does not access real financial accounts, and its output should not inform
+    actual lending or borrowing decisions. All calculations run locally in this session;
+    no input is stored or transmitted.
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown(f'<div class="footer-note">CreditSight \u2014 Alternative Credit Scoring for the Unbanked \u00b7 Mini Project \u00b7 Hindustan College of Science and Technology \u00b7 Oorvi Kulshreshtha & Kunal Rathore</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="footer-note">CreditSight \u2014 Alternative Credit Scoring for the Unbanked</div>', unsafe_allow_html=True)
