@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import shap
 import math
+import urllib.parse
 from xgboost import XGBClassifier
 
 # =========================================================
@@ -28,48 +29,50 @@ DARK = st.session_state.dark_mode
 
 # =========================================================
 # DESIGN TOKENS
-# "Signal" system — near-black glass base, one saturated
-# lime accent (the "signal"), violet as its gradient partner.
+# Flat near-black base, single warm gold accent, subtle
+# scattered fintech-glyph texture behind everything.
 # =========================================================
 if DARK:
-    BG          = "#06070C"
-    BG_SOFT     = "#0A0C15"
-    GLASS       = "rgba(255,255,255,0.035)"
-    GLASS_HOVER = "rgba(255,255,255,0.055)"
-    CARD_BORDER = "rgba(255,255,255,0.09)"
+    BG          = "#08090C"
+    BG_SOFT     = "#0C0D12"
+    GLASS       = "rgba(20,21,28,0.72)"
+    GLASS_HOVER = "rgba(26,27,35,0.85)"
+    CARD_BORDER = "rgba(255,255,255,0.08)"
     DIVIDER     = "rgba(255,255,255,0.07)"
-    TEXT        = "#F4F5FA"
-    SUBTEXT     = "#9599B5"
-    MUTE        = "#5D6180"
-    LIME        = "#C6FF5E"
-    LIME_GLOW   = "rgba(198,255,94,0.35)"
-    LIME_SOFT   = "rgba(198,255,94,0.12)"
-    VIOLET      = "#9B8CFF"
-    VIOLET_SOFT = "rgba(155,140,255,0.14)"
+    TEXT        = "#F5F4F0"
+    SUBTEXT     = "#9C9CA8"
+    MUTE        = "#5F5F6C"
+    LIME        = "#F0A93A"
+    LIME_2      = "#FFD98A"
+    LIME_GLOW   = "rgba(240,169,58,0.35)"
+    LIME_SOFT   = "rgba(240,169,58,0.13)"
+    VIOLET      = "#F0A93A"
+    VIOLET_SOFT = "rgba(240,169,58,0.10)"
     TRACK       = "rgba(255,255,255,0.07)"
-    RISK_LOW    = "#6EE7B7"
-    RISK_LOW_SOFT  = "rgba(110,231,183,0.14)"
-    RISK_MED    = "#FFC168"
-    RISK_MED_SOFT  = "rgba(255,193,104,0.14)"
-    RISK_HIGH   = "#FF6B6B"
-    RISK_HIGH_SOFT = "rgba(255,107,107,0.14)"
-    BTN_TEXT    = "#06070C"
+    RISK_LOW    = "#5FD98E"
+    RISK_LOW_SOFT  = "rgba(95,217,142,0.14)"
+    RISK_MED    = "#F0A93A"
+    RISK_MED_SOFT  = "rgba(240,169,58,0.14)"
+    RISK_HIGH   = "#F1596E"
+    RISK_HIGH_SOFT = "rgba(241,89,110,0.14)"
+    BTN_TEXT    = "#1A1206"
     INPUT_BG    = "rgba(255,255,255,0.045)"
 else:
-    BG          = "#F3F4F8"
-    BG_SOFT     = "#EAEBF2"
-    GLASS       = "rgba(255,255,255,0.75)"
-    GLASS_HOVER = "rgba(255,255,255,0.92)"
+    BG          = "#F5F4EF"
+    BG_SOFT     = "#ECEAE1"
+    GLASS       = "rgba(255,255,255,0.86)"
+    GLASS_HOVER = "rgba(255,255,255,0.96)"
     CARD_BORDER = "rgba(20,22,40,0.09)"
     DIVIDER     = "rgba(20,22,40,0.08)"
-    TEXT        = "#12131F"
+    TEXT        = "#17150E"
     SUBTEXT     = "#54586E"
     MUTE        = "#8A8DA3"
-    LIME        = "#5C8A1E"
-    LIME_GLOW   = "rgba(92,138,30,0.20)"
-    LIME_SOFT   = "rgba(92,138,30,0.10)"
-    VIOLET      = "#5A4CD6"
-    VIOLET_SOFT = "rgba(90,76,214,0.10)"
+    LIME        = "#A9720E"
+    LIME_2      = "#D99B2B"
+    LIME_GLOW   = "rgba(169,114,14,0.20)"
+    LIME_SOFT   = "rgba(169,114,14,0.10)"
+    VIOLET      = "#A9720E"
+    VIOLET_SOFT = "rgba(169,114,14,0.08)"
     TRACK       = "rgba(20,22,40,0.08)"
     RISK_LOW    = "#1E9E73"
     RISK_LOW_SOFT  = "rgba(30,158,115,0.12)"
@@ -81,6 +84,20 @@ else:
     INPUT_BG    = "rgba(20,22,40,0.04)"
 
 # =========================================================
+# BACKGROUND TEXTURE — scattered ₹ / % / triangle glyphs,
+# tiled at very low opacity behind everything (fintech
+# "data watermark" motif)
+# =========================================================
+_tex_rgb = "255,255,255" if DARK else "20,22,40"
+_tex_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'>
+<text x='16' y='40' font-family='Arial,sans-serif' font-size='22' fill='rgba({_tex_rgb},0.05)'>\u20b9</text>
+<text x='112' y='118' font-family='Arial,sans-serif' font-size='17' fill='rgba({_tex_rgb},0.045)'>%</text>
+<polygon points='140,20 153,40 127,40' fill='none' stroke='rgba({_tex_rgb},0.05)' stroke-width='1.4'/>
+<text x='40' y='138' font-family='Arial,sans-serif' font-size='14' fill='rgba({_tex_rgb},0.04)'>\u20b9</text>
+</svg>"""
+BG_TEXTURE_URI = "data:image/svg+xml," + urllib.parse.quote(_tex_svg)
+
+# =========================================================
 # GLOBAL CSS
 # =========================================================
 st.markdown(f"""
@@ -90,10 +107,14 @@ st.markdown(f"""
 html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; }}
 
 .stApp {{
-    background:
-        radial-gradient(ellipse 60% 45% at 12% -8%, {LIME_GLOW} 0%, transparent 60%),
-        radial-gradient(ellipse 55% 40% at 100% 8%, {VIOLET_SOFT} 0%, transparent 55%),
-        {BG};
+    background-image:
+        url("{BG_TEXTURE_URI}"),
+        radial-gradient(ellipse 60% 45% at 12% -8%, {LIME_GLOW} 0%, transparent 62%),
+        radial-gradient(ellipse 55% 40% at 100% 8%, {VIOLET_SOFT} 0%, transparent 58%);
+    background-repeat: repeat, no-repeat, no-repeat;
+    background-size: 170px 170px, auto, auto;
+    background-position: 0 0, 12% -8%, 100% 8%;
+    background-color: {BG};
     color: {TEXT};
 }}
 
@@ -109,13 +130,13 @@ html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; }}
 
 h1, h2, h3 {{ font-family: 'Space Grotesk', sans-serif; }}
 
-/* ---------- Glass card base ---------- */
+/* ---------- Card base (flat, near-solid — not heavy glass) ---------- */
 .glass {{
     background: {GLASS};
     border: 1px solid {CARD_BORDER};
     border-radius: 20px;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }}
 
 /* ---------- Top bar ---------- */
@@ -130,7 +151,7 @@ h1, h2, h3 {{ font-family: 'Space Grotesk', sans-serif; }}
 .brand-mark {{
     width: 34px; height: 34px;
     border-radius: 10px;
-    background: linear-gradient(135deg, {LIME} 0%, {VIOLET} 140%);
+    background: linear-gradient(135deg, {LIME} 0%, {LIME_2} 140%);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     box-shadow: 0 0 22px {LIME_GLOW};
@@ -180,13 +201,13 @@ h1, h2, h3 {{ font-family: 'Space Grotesk', sans-serif; }}
 }}
 .hero-title {{
     font-family: 'Space Grotesk', sans-serif;
-    font-size: clamp(1.9rem, 3.6vw, 3rem);
-    font-weight: 700;
+    font-size: clamp(2.1rem, 4.1vw, 3.35rem);
+    font-weight: 800;
     color: {TEXT};
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
     margin-bottom: 0.9rem;
-    max-width: 760px;
+    max-width: 780px;
 }}
 .hero-title .accent {{ color: {LIME}; }}
 .hero-sub {{
@@ -315,10 +336,10 @@ div[data-baseweb="popover"] li {{
 
 /* ---------- Predict button ---------- */
 div.stButton > button {{
-    background: linear-gradient(100deg, {LIME} 0%, #A8E84A 100%);
+    background: linear-gradient(100deg, {LIME} 0%, {LIME_2} 100%);
     color: {BTN_TEXT};
     border: none;
-    border-radius: 12px;
+    border-radius: 999px;
     padding: 0.78rem 1.6rem;
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
@@ -335,12 +356,12 @@ div.stButton > button:active {{ transform: translateY(0px); }}
 
 .theme-btn button {{
     background: {GLASS} !important;
-    backdrop-filter: blur(18px);
-    color: {TEXT} !important;
+    backdrop-filter: blur(6px);
+    color: {LIME} !important;
     border: 1px solid {CARD_BORDER} !important;
     box-shadow: none !important;
     font-size: 1.05rem !important;
-    border-radius: 12px !important;
+    border-radius: 999px !important;
     width: 44px !important;
     height: 44px !important;
     min-width: 44px !important;
@@ -352,6 +373,24 @@ div.stButton > button:active {{ transform: translateY(0px); }}
 }}
 .theme-btn {{ display: flex; justify-content: flex-end; }}
 .theme-btn > div {{ width: auto !important; }}
+
+/* ---------- Download buttons (secondary, outline pill) ---------- */
+div[data-testid="stDownloadButton"] > button {{
+    background: transparent !important;
+    color: {LIME} !important;
+    border: 1.5px solid {LIME_GLOW} !important;
+    border-radius: 999px !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    padding: 0.6rem 1.3rem !important;
+    box-shadow: none !important;
+    transition: all 0.18s ease !important;
+}}
+div[data-testid="stDownloadButton"] > button:hover {{
+    background: {LIME_SOFT} !important;
+    border-color: {LIME} !important;
+}}
 
 /* ---------- Empty state (slim, full-width prompt bar) ---------- */
 .empty-state-slim {{
@@ -474,25 +513,31 @@ div.stButton > button:active {{ transform: translateY(0px); }}
 }}
 .tier-seg {{ height: 10px; }}
 
-/* ---------- Streamlit tabs override ---------- */
+/* ---------- Streamlit tabs override (pill nav, gradient active state) ---------- */
 .stTabs [data-baseweb="tab-list"] {{
-    gap: 0.4rem;
+    gap: 0.5rem;
     background: transparent;
+    border-bottom: 1px solid {DIVIDER};
+    padding-bottom: 1.2rem;
+    margin-bottom: 0.4rem;
 }}
 .stTabs [data-baseweb="tab"] {{
     background: {GLASS};
     border: 1px solid {CARD_BORDER};
-    border-radius: 12px;
+    border-radius: 999px;
     color: {SUBTEXT};
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
     font-size: 0.88rem;
-    padding: 0.6rem 1.2rem;
+    padding: 0.65rem 1.35rem;
+    transition: all 0.18s ease;
 }}
 .stTabs [aria-selected="true"] {{
-    background: {LIME_SOFT} !important;
-    color: {LIME} !important;
-    border: 1px solid {LIME_GLOW} !important;
+    background: linear-gradient(100deg, {LIME} 0%, {LIME_2} 100%) !important;
+    color: {BTN_TEXT} !important;
+    border: 1px solid transparent !important;
+    font-weight: 700 !important;
+    box-shadow: 0 8px 22px -10px {LIME_GLOW};
 }}
 .stTabs [data-baseweb="tab-highlight"] {{ background: transparent !important; }}
 .stTabs [data-baseweb="tab-border"] {{ display: none; }}
