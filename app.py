@@ -245,7 +245,14 @@ h1, h2, h3 {{ font-family: 'Space Grotesk', sans-serif; }}
 .section-card {{
     padding: 1.7rem 1.8rem;
     margin-bottom: 1.3rem;
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }}
+.section-card:hover {{
+    transform: translateY(-3px);
+    border-color: {LIME_GLOW};
+    box-shadow: 0 16px 40px -20px rgba(0,0,0,0.5);
+}}
+.hero-card {{ transition: border-color 0.3s ease; }}
 .card-eyebrow {{
     font-family: 'IBM Plex Mono', monospace;
     text-transform: uppercase;
@@ -277,7 +284,11 @@ h1, h2, h3 {{ font-family: 'Space Grotesk', sans-serif; }}
     margin: 0.3rem 0 0.6rem 0;
     padding-top: 0.9rem;
     border-top: 1px solid {DIVIDER};
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
 }}
+.fieldset-label svg {{ flex-shrink: 0; opacity: 0.85; }}
 
 /* ---------- Streamlit widget overrides ---------- */
 .stSlider label, .stNumberInput label, .stSelectbox label {{
@@ -663,7 +674,7 @@ with tab1:
     st.markdown('<div class="card-title">Your financial behavior</div>', unsafe_allow_html=True)
     st.markdown('<div class="card-desc">Nothing here is stored \u2014 the score is computed live, in this browser session only.</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="fieldset-label">Personal</div>', unsafe_allow_html=True)
+    st.markdown('''<div class="fieldset-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg>Personal</div>''', unsafe_allow_html=True)
     p1, p2, p3, p4 = st.columns(4)
     with p1:
         age = st.number_input("Age", min_value=18, max_value=100, value=30)
@@ -674,7 +685,7 @@ with tab1:
     with p4:
         income_unreported = st.selectbox("Income documented?", ["Yes", "No"])
 
-    st.markdown('<div class="fieldset-label">Credit behavior</div>', unsafe_allow_html=True)
+    st.markdown('''<div class="fieldset-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Credit behavior</div>''', unsafe_allow_html=True)
     b1, b2, b3, b4 = st.columns(4)
     with b1:
         spending_discipline_ratio = st.slider("Credit utilization ratio", 0.0, 1.5, 0.3, help="Portion of available credit currently in use.")
@@ -685,7 +696,7 @@ with tab1:
     with b4:
         property_loan_count = st.number_input("Property / real estate loans", min_value=0, max_value=10, value=0)
 
-    st.markdown('<div class="fieldset-label">Payment history</div>', unsafe_allow_html=True)
+    st.markdown('''<div class="fieldset-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Payment history</div>''', unsafe_allow_html=True)
     l1, l2, l3 = st.columns(3)
     with l1:
         payment_irregularity_minor = st.number_input("30\u201359 days late", min_value=0, max_value=20, value=0)
@@ -718,11 +729,23 @@ with tab1:
                     </feMerge>
                 </filter>
             </defs>
+            <style>
+                @keyframes gaugeFill {{
+                    from {{ stroke-dashoffset: {circumference:.2f}; }}
+                    to {{ stroke-dashoffset: {offset:.2f}; }}
+                }}
+                .gauge-fill-path {{
+                    animation: gaugeFill 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                }}
+                @media (prefers-reduced-motion: reduce) {{
+                    .gauge-fill-path {{ animation: none; stroke-dashoffset: {offset:.2f}; }}
+                }}
+            </style>
             <path d="M {cx-r} {cy} A {r} {r} 0 0 1 {cx+r} {cy}"
                   fill="none" stroke="{TRACK}" stroke-width="14" stroke-linecap="round"/>
-            <path d="M {cx-r} {cy} A {r} {r} 0 0 1 {cx+r} {cy}"
+            <path class="gauge-fill-path" d="M {cx-r} {cy} A {r} {r} 0 0 1 {cx+r} {cy}"
                   fill="none" stroke="{color}" stroke-width="14" stroke-linecap="round"
-                  stroke-dasharray="{circumference:.2f}" stroke-dashoffset="{offset:.2f}"
+                  stroke-dasharray="{circumference:.2f}" stroke-dashoffset="{circumference:.2f}"
                   filter="url(#glow)"/>
         </svg>
         <div class="gauge-center">
