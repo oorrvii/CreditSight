@@ -84,16 +84,13 @@ else:
     INPUT_BG    = "rgba(20,22,40,0.04)"
 
 # =========================================================
-# BACKGROUND TEXTURE — scattered ₹ / % / triangle glyphs,
-# tiled at very low opacity behind everything (fintech
-# "data watermark" motif)
+# BACKGROUND TEXTURE — a fine dot-grid, very low opacity.
+# Generic "data surface" motif (not tied to any specific
+# reference) that reads as structure, not decoration.
 # =========================================================
 _tex_rgb = "255,255,255" if DARK else "20,22,40"
-_tex_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'>
-<text x='16' y='40' font-family='Arial,sans-serif' font-size='22' fill='rgba({_tex_rgb},0.05)'>\u20b9</text>
-<text x='112' y='118' font-family='Arial,sans-serif' font-size='17' fill='rgba({_tex_rgb},0.045)'>%</text>
-<polygon points='140,20 153,40 127,40' fill='none' stroke='rgba({_tex_rgb},0.05)' stroke-width='1.4'/>
-<text x='40' y='138' font-family='Arial,sans-serif' font-size='14' fill='rgba({_tex_rgb},0.04)'>\u20b9</text>
+_tex_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'>
+<circle cx='2' cy='2' r='1.1' fill='rgba({_tex_rgb},0.06)'/>
 </svg>"""
 BG_TEXTURE_URI = "data:image/svg+xml," + urllib.parse.quote(_tex_svg)
 
@@ -112,7 +109,7 @@ html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; }}
         radial-gradient(ellipse 60% 45% at 12% -8%, {LIME_GLOW} 0%, transparent 62%),
         radial-gradient(ellipse 55% 40% at 100% 8%, {VIOLET_SOFT} 0%, transparent 58%);
     background-repeat: repeat, no-repeat, no-repeat;
-    background-size: 170px 170px, auto, auto;
+    background-size: 28px 28px, auto, auto;
     background-position: 0 0, 12% -8%, 100% 8%;
     background-color: {BG};
     color: {TEXT};
@@ -514,12 +511,13 @@ div[data-testid="stDownloadButton"] > button:hover {{
 .tier-seg {{ height: 10px; }}
 
 /* ---------- Streamlit tabs override (pill nav, gradient active state) ---------- */
+.stTabs {{ margin-top: 0.4rem; }}
 .stTabs [data-baseweb="tab-list"] {{
-    gap: 0.5rem;
+    gap: 0.6rem;
     background: transparent;
-    border-bottom: 1px solid {DIVIDER};
-    padding-bottom: 1.2rem;
-    margin-bottom: 0.4rem;
+    border-bottom: none;
+    flex-wrap: wrap;
+    padding: 0 0 1.6rem 0;
 }}
 .stTabs [data-baseweb="tab"] {{
     background: {GLASS};
@@ -529,7 +527,7 @@ div[data-testid="stDownloadButton"] > button:hover {{
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
     font-size: 0.88rem;
-    padding: 0.65rem 1.35rem;
+    padding: 0.7rem 1.5rem;
     transition: all 0.18s ease;
 }}
 .stTabs [aria-selected="true"] {{
@@ -541,6 +539,7 @@ div[data-testid="stDownloadButton"] > button:hover {{
 }}
 .stTabs [data-baseweb="tab-highlight"] {{ background: transparent !important; }}
 .stTabs [data-baseweb="tab-border"] {{ display: none; }}
+.stTabs [data-baseweb="tab-panel"] {{ padding-top: 0.5rem; }}
 
 /* ---------- Affordability estimator ---------- */
 .afford-label {{
@@ -608,6 +607,19 @@ div[data-testid="stDownloadButton"] > button:hover {{
 @media (max-width: 768px) {{
     .section-card, .hero-card {{ padding: 1.3rem 1.2rem; }}
     .stat-row {{ gap: 1.1rem; }}
+    .afford-num {{ font-size: 1.15rem; }}
+    .whatif-result {{ gap: 1rem; }}
+    .gauge-svg-holder {{ width: 200px; height: 118px; }}
+    .stTabs [data-baseweb="tab"] {{ padding: 0.6rem 1.1rem; font-size: 0.82rem; }}
+}}
+@media (max-width: 520px) {{
+    .signal-row {{
+        grid-template-columns: 1fr;
+        row-gap: 0.4rem;
+    }}
+    .signal-tag {{ justify-self: start; }}
+    .whatif-item {{ min-width: 90px; }}
+    .brand-tag {{ display: none; }}
 }}
 </style>
 """, unsafe_allow_html=True)
