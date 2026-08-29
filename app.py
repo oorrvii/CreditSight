@@ -81,7 +81,7 @@ else:
     RISK_HIGH   = "#D23C50"
     RISK_HIGH_SOFT = "rgba(210,60,80,0.12)"
     BTN_TEXT    = "#FFFFFF"
-    INPUT_BG    = "rgba(20,22,40,0.04)"
+    INPUT_BG    = INPUT_BG = "#FFFFFF"
 
 # =========================================================
 # BACKGROUND TEXTURE — a fine dot-grid, very low opacity.
