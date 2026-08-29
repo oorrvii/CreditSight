@@ -520,24 +520,24 @@ div[data-testid="stDownloadButton"] > button:hover {{
     padding: 0 0 1.6rem 0;
 }}
 .stTabs [data-baseweb="tab"] {{
-    background: {GLASS};
-    border: 1px solid {CARD_BORDER};
-    border-radius: 999px;
-    color: {SUBTEXT};
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
-    font-size: 0.88rem;
-    padding: 0.75rem 1.7rem;
-    white-space: nowrap;
+    background: {GLASS} !important;
+    border: 1px solid {CARD_BORDER} !important;
+    border-radius: 999px !important;
+    color: {SUBTEXT} !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+    padding: 0.85rem 2rem !important;
+    white-space: nowrap !important;
     outline: none !important;
     box-shadow: none !important;
-    transition: all 0.18s ease;
+    transition: all 0.18s ease !important;
 }}
 .stTabs [data-baseweb="tab"] p {{
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.55rem !important;
+    margin: 0 !important;
 }}
 .stTabs [data-baseweb="tab"]:focus,
 .stTabs [data-baseweb="tab"]:focus-visible,
@@ -625,7 +625,7 @@ div[data-testid="stDownloadButton"] > button:hover {{
     .afford-num {{ font-size: 1.15rem; }}
     .whatif-result {{ gap: 1rem; }}
     .gauge-svg-holder {{ width: 200px; height: 118px; }}
-    .stTabs [data-baseweb="tab"] {{ padding: 0.6rem 1.1rem; font-size: 0.82rem; }}
+    .stTabs [data-baseweb="tab"] {{ padding: 0.65rem 1.3rem !important; font-size: 0.82rem !important; }}
 }}
 @media (max-width: 520px) {{
     .signal-row {{
