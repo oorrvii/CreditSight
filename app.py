@@ -511,15 +511,15 @@ div[data-testid="stDownloadButton"] > button:hover {{
 .tier-seg {{ height: 10px; }}
 
 /* ---------- Streamlit tabs override (pill nav, gradient active state) ---------- */
-.stTabs {{ margin-top: 0.4rem; }}
-.stTabs [data-baseweb="tab-list"] {{
+div[data-testid="stTabs"] {{ margin-top: 0.4rem; }}
+div[data-testid="stTabs"] [data-baseweb="tab-list"] {{
     gap: 0.7rem;
     background: transparent;
     border-bottom: none;
     flex-wrap: wrap;
     padding: 0 0 1.6rem 0;
 }}
-.stTabs [data-baseweb="tab"] {{
+div[data-testid="stTabs"] [data-baseweb="tab"] {{
     background: {GLASS} !important;
     border: 1px solid {CARD_BORDER} !important;
     border-radius: 999px !important;
@@ -533,28 +533,28 @@ div[data-testid="stDownloadButton"] > button:hover {{
     box-shadow: none !important;
     transition: all 0.18s ease !important;
 }}
-.stTabs [data-baseweb="tab"] p {{
+div[data-testid="stTabs"] [data-baseweb="tab"] p {{
     display: flex !important;
     align-items: center !important;
     gap: 0.55rem !important;
     margin: 0 !important;
 }}
-.stTabs [data-baseweb="tab"]:focus,
-.stTabs [data-baseweb="tab"]:focus-visible,
-.stTabs [data-baseweb="tab"]:active {{
+div[data-testid="stTabs"] [data-baseweb="tab"]:focus,
+div[data-testid="stTabs"] [data-baseweb="tab"]:focus-visible,
+div[data-testid="stTabs"] [data-baseweb="tab"]:active {{
     outline: none !important;
     box-shadow: none !important;
 }}
-.stTabs [aria-selected="true"] {{
+div[data-testid="stTabs"] [aria-selected="true"] {{
     background: linear-gradient(100deg, {LIME} 0%, {LIME_2} 100%) !important;
     color: {BTN_TEXT} !important;
     border: 1px solid transparent !important;
     font-weight: 700 !important;
     box-shadow: 0 8px 22px -10px {LIME_GLOW} !important;
 }}
-.stTabs [data-baseweb="tab-highlight"] {{ background: transparent !important; }}
-.stTabs [data-baseweb="tab-border"] {{ display: none; }}
-.stTabs [data-baseweb="tab-panel"] {{ padding-top: 0.5rem; }}
+div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {{ background: transparent !important; }}
+div[data-testid="stTabs"] [data-baseweb="tab-border"] {{ display: none; }}
+div[data-testid="stTabs"] [data-baseweb="tab-panel"] {{ padding-top: 0.5rem; }}
 
 /* ---------- Affordability estimator ---------- */
 .afford-label {{
@@ -625,7 +625,7 @@ div[data-testid="stDownloadButton"] > button:hover {{
     .afford-num {{ font-size: 1.15rem; }}
     .whatif-result {{ gap: 1rem; }}
     .gauge-svg-holder {{ width: 200px; height: 118px; }}
-    .stTabs [data-baseweb="tab"] {{ padding: 0.65rem 1.3rem !important; font-size: 0.82rem !important; }}
+    div[data-testid="stTabs"] [data-baseweb="tab"] {{ padding: 0.65rem 1.3rem !important; font-size: 0.82rem !important; }}
 }}
 @media (max-width: 520px) {{
     .signal-row {{
@@ -735,7 +735,7 @@ FEATURE_LABELS = {
 # TABS — separate individual vs. institutional flows so
 # neither page gets cluttered with the other's controls
 # =========================================================
-tab1, tab2 = st.tabs(["\U0001F9CD\u2002Individual Score ", "\U0001F3E6\u2002Portfolio Review (Bank / NBFC) "])
+tab1, tab2 = st.tabs(["\U0001F9CD\u2002Individual Score", "\U0001F3E6\u2002Portfolio Review (Bank / NBFC)"])
 
 with tab1:
     # =========================================================
