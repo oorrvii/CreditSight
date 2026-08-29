@@ -42,20 +42,20 @@ if DARK:
     TEXT        = "#F5F4F0"
     SUBTEXT     = "#9C9CA8"
     MUTE        = "#5F5F6C"
-    LIME        = "#F0A93A"
-    LIME_2      = "#FFD98A"
-    LIME_GLOW   = "rgba(240,169,58,0.35)"
-    LIME_SOFT   = "rgba(240,169,58,0.13)"
-    VIOLET      = "#F0A93A"
-    VIOLET_SOFT = "rgba(240,169,58,0.10)"
+    LIME        = "#14C9A6"
+    LIME_2      = "#5EEAD4"
+    LIME_GLOW   = "rgba(20,201,166,0.35)"
+    LIME_SOFT   = "rgba(20,201,166,0.13)"
+    VIOLET      = "#14C9A6"
+    VIOLET_SOFT = "rgba(20,201,166,0.10)"
     TRACK       = "rgba(255,255,255,0.07)"
     RISK_LOW    = "#5FD98E"
     RISK_LOW_SOFT  = "rgba(95,217,142,0.14)"
-    RISK_MED    = "#F0A93A"
-    RISK_MED_SOFT  = "rgba(240,169,58,0.14)"
+    RISK_MED    = "#E8A33D"
+    RISK_MED_SOFT  = "rgba(232,163,61,0.14)"
     RISK_HIGH   = "#F1596E"
     RISK_HIGH_SOFT = "rgba(241,89,110,0.14)"
-    BTN_TEXT    = "#1A1206"
+    BTN_TEXT    = "#062420"
     INPUT_BG    = "rgba(255,255,255,0.045)"
 else:
     BG          = "#F5F4EF"
@@ -67,12 +67,12 @@ else:
     TEXT        = "#17150E"
     SUBTEXT     = "#54586E"
     MUTE        = "#8A8DA3"
-    LIME        = "#A9720E"
-    LIME_2      = "#D99B2B"
-    LIME_GLOW   = "rgba(169,114,14,0.20)"
-    LIME_SOFT   = "rgba(169,114,14,0.10)"
-    VIOLET      = "#A9720E"
-    VIOLET_SOFT = "rgba(169,114,14,0.08)"
+    LIME        = "#0B7C74"
+    LIME_2      = "#12A594"
+    LIME_GLOW   = "rgba(11,124,116,0.20)"
+    LIME_SOFT   = "rgba(11,124,116,0.10)"
+    VIOLET      = "#0B7C74"
+    VIOLET_SOFT = "rgba(11,124,116,0.08)"
     TRACK       = "rgba(20,22,40,0.08)"
     RISK_LOW    = "#1E9E73"
     RISK_LOW_SOFT  = "rgba(30,158,115,0.12)"
@@ -513,7 +513,7 @@ div[data-testid="stDownloadButton"] > button:hover {{
 /* ---------- Streamlit tabs override (pill nav, gradient active state) ---------- */
 .stTabs {{ margin-top: 0.4rem; }}
 .stTabs [data-baseweb="tab-list"] {{
-    gap: 0.6rem;
+    gap: 0.7rem;
     background: transparent;
     border-bottom: none;
     flex-wrap: wrap;
@@ -527,15 +527,30 @@ div[data-testid="stDownloadButton"] > button:hover {{
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
     font-size: 0.88rem;
-    padding: 0.7rem 1.5rem;
+    padding: 0.75rem 1.7rem;
+    white-space: nowrap;
+    outline: none !important;
+    box-shadow: none !important;
     transition: all 0.18s ease;
+}}
+.stTabs [data-baseweb="tab"] p {{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}}
+.stTabs [data-baseweb="tab"]:focus,
+.stTabs [data-baseweb="tab"]:focus-visible,
+.stTabs [data-baseweb="tab"]:active {{
+    outline: none !important;
+    box-shadow: none !important;
 }}
 .stTabs [aria-selected="true"] {{
     background: linear-gradient(100deg, {LIME} 0%, {LIME_2} 100%) !important;
     color: {BTN_TEXT} !important;
     border: 1px solid transparent !important;
     font-weight: 700 !important;
-    box-shadow: 0 8px 22px -10px {LIME_GLOW};
+    box-shadow: 0 8px 22px -10px {LIME_GLOW} !important;
 }}
 .stTabs [data-baseweb="tab-highlight"] {{ background: transparent !important; }}
 .stTabs [data-baseweb="tab-border"] {{ display: none; }}
@@ -720,7 +735,7 @@ FEATURE_LABELS = {
 # TABS — separate individual vs. institutional flows so
 # neither page gets cluttered with the other's controls
 # =========================================================
-tab1, tab2 = st.tabs(["\U0001F9CD Individual Score", "\U0001F3E6 Portfolio Review (Bank / NBFC)"])
+tab1, tab2 = st.tabs(["\U0001F9CD\u2002Individual Score", "\U0001F3E6\u2002Portfolio Review (Bank / NBFC)"])
 
 with tab1:
     # =========================================================
