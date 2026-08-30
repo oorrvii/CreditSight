@@ -81,7 +81,7 @@ else:
     RISK_HIGH   = "#D23C50"
     RISK_HIGH_SOFT = "rgba(210,60,80,0.12)"
     BTN_TEXT    = "#FFFFFF"
-    INPUT_BG    = INPUT_BG = "#FFFFFF"
+    INPUT_BG    = "rgba(20,22,40,0.04)"
 
 # =========================================================
 # BACKGROUND TEXTURE — a fine dot-grid, very low opacity.
@@ -787,19 +787,19 @@ FEATURE_ORDER = [
 ]
 
 FEATURE_LABELS = {
-    "spending_discipline_ratio": "Credit utilization ratio",
+    "spending_discipline_ratio": "Credit limit used",
     "age": "Age",
-    "payment_irregularity_minor": "Minor late payments (30\u201359d)",
-    "payment_irregularity_moderate": "Moderate late payments (60\u201389d)",
-    "payment_irregularity_severe": "Severe late payments (90+d)",
-    "income_obligation_ratio": "Debt-to-income ratio",
+    "payment_irregularity_minor": "Paid 1\u20132 months late",
+    "payment_irregularity_moderate": "Paid 2\u20133 months late",
+    "payment_irregularity_severe": "Paid 3+ months late",
+    "income_obligation_ratio": "Income spent on debt",
     "income_level": "Monthly income",
-    "income_unreported": "Income undocumented",
-    "financial_activity_count": "Active credit lines / loans",
-    "property_loan_count": "Property loans",
-    "dependents_count": "Dependents",
-    "payment_regularity_score": "Payment regularity score",
-    "income_stability": "Income stability tier",
+    "income_unreported": "No income proof",
+    "financial_activity_count": "Loans / credit cards held",
+    "property_loan_count": "Home or property loans",
+    "dependents_count": "People depending on you",
+    "payment_regularity_score": "Overall payment regularity",
+    "income_stability": "Income stability level",
 }
 
 # =========================================================
@@ -820,33 +820,35 @@ with tab1:
     st.markdown('''<div class="fieldset-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg>Personal</div>''', unsafe_allow_html=True)
     p1, p2, p3, p4 = st.columns(4)
     with p1:
-        age = st.number_input("Age", min_value=18, max_value=100, value=30)
+        age = st.number_input("Age", min_value=18, max_value=100, value=30, help="Your age in years.")
     with p2:
-        income_level = st.number_input("Monthly income (\u20b9)", min_value=0, value=25000, step=1000)
+        income_level = st.number_input("Monthly income (\u20b9)", min_value=0, value=25000, step=1000, help="Your total monthly income before any deductions.")
     with p3:
-        dependents_count = st.number_input("Dependents", min_value=0, max_value=10, value=0)
+        dependents_count = st.number_input("People who depend on you", min_value=0, max_value=10, value=0, help="Children, spouse, parents, or anyone who relies on your income for support.")
     with p4:
-        income_unreported = st.selectbox("Income documented?", ["Yes", "No"])
+        income_unreported = st.selectbox("Do you have income proof?", ["Yes", "No"], help="Select 'No' if your income is informal (e.g. cash-based, gig work) and you don't have documents like salary slips, bank statements, or tax returns to show it.")
 
     st.markdown('''<div class="fieldset-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Credit behavior</div>''', unsafe_allow_html=True)
     b1, b2, b3, b4 = st.columns(4)
     with b1:
-        spending_discipline_ratio = st.slider("Credit utilization ratio", 0.0, 1.5, 0.3, help="Portion of available credit currently in use.")
+        spending_discipline_pct = st.slider("Credit limit you're using", 0, 150, 30, format="%d%%", help="If your credit card limit is \u20b91,00,000 and you've spent \u20b930,000 on it, you're using 30%. Generally, staying under 30% is seen as healthy. Going over 100% means you've exceeded your limit.")
+        spending_discipline_ratio = spending_discipline_pct / 100
     with b2:
-        income_obligation_ratio = st.slider("Debt-to-income ratio", 0.0, 2.0, 0.3, help="Monthly debt obligations \u00f7 monthly income.")
+        income_obligation_pct = st.slider("Income spent repaying debt", 0, 200, 30, format="%d%%", help="Add up all your monthly loan/EMI/credit card payments and divide by your monthly income. E.g. \u20b925,000 income and \u20b97,500 in EMIs = 30%. Going over 100% means your debt payments exceed your income.")
+        income_obligation_ratio = income_obligation_pct / 100
     with b3:
-        financial_activity_count = st.number_input("Active credit lines / loans", min_value=0, max_value=30, value=3)
+        financial_activity_count = st.number_input("Loans or credit cards you have", min_value=0, max_value=30, value=3, help="Count personal loans, credit cards, car loans, and any other loans that are currently open (not yet fully paid off).")
     with b4:
-        property_loan_count = st.number_input("Property / real estate loans", min_value=0, max_value=10, value=0)
+        property_loan_count = st.number_input("Home or property loans", min_value=0, max_value=10, value=0, help="Number of home loans or loans taken against property that you currently have.")
 
-    st.markdown('''<div class="fieldset-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Payment history</div>''', unsafe_allow_html=True)
+    st.markdown('''<div class="fieldset-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Payment history (last 2 years)</div>''', unsafe_allow_html=True)
     l1, l2, l3 = st.columns(3)
     with l1:
-        payment_irregularity_minor = st.number_input("30\u201359 days late", min_value=0, max_value=20, value=0)
+        payment_irregularity_minor = st.number_input("Paid 1\u20132 months late", min_value=0, max_value=20, value=0, help="Number of times you paid a bill, EMI, or credit card due about 1 to 2 months after the due date.")
     with l2:
-        payment_irregularity_moderate = st.number_input("60\u201389 days late", min_value=0, max_value=20, value=0)
+        payment_irregularity_moderate = st.number_input("Paid 2\u20133 months late", min_value=0, max_value=20, value=0, help="Number of times a payment was about 2 to 3 months overdue.")
     with l3:
-        payment_irregularity_severe = st.number_input("90+ days late", min_value=0, max_value=20, value=0)
+        payment_irregularity_severe = st.number_input("Paid 3+ months late", min_value=0, max_value=20, value=0, help="Number of times a payment was 3 or more months overdue. This is treated as a serious warning sign and affects your score the most.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1063,11 +1065,13 @@ with tab1:
 
         w1, w2, w3 = st.columns(3)
         with w1:
-            wi_spending = st.slider("Credit utilization ratio", 0.0, 1.5, float(spending_discipline_ratio), key="wi_spending")
+            wi_spending_pct = st.slider("Credit limit used", 0, 150, int(round(spending_discipline_ratio * 100)), format="%d%%", key="wi_spending")
+            wi_spending = wi_spending_pct / 100
         with w2:
-            wi_obligation = st.slider("Debt-to-income ratio", 0.0, 2.0, float(income_obligation_ratio), key="wi_obligation")
+            wi_obligation_pct = st.slider("Income spent on debt", 0, 200, int(round(income_obligation_ratio * 100)), format="%d%%", key="wi_obligation")
+            wi_obligation = wi_obligation_pct / 100
         with w3:
-            wi_severe = st.number_input("90+ days late", min_value=0, max_value=20, value=int(payment_irregularity_severe), key="wi_severe")
+            wi_severe = st.number_input("Times paid 3+ months late", min_value=0, max_value=20, value=int(payment_irregularity_severe), key="wi_severe")
 
         wi_regularity_score = (
             payment_irregularity_minor * 1
@@ -1148,7 +1152,7 @@ with tab2:
     with dl1:
         st.download_button("\u2B07 Download CSV template", data=sample_csv, file_name="creditsight_batch_template.csv", mime="text/csv", use_container_width=True)
 
-    uploaded = st.file_uploader("Upload applicant CSV", type=["csv"], label_visibility="collapsed")
+    uploaded = st.file_uploader("Upload applicant CSV", type=None, label_visibility="collapsed", help="If your CSV appears greyed out on mobile, this now accepts any file type and checks the format after upload instead.")
     st.markdown('</div>', unsafe_allow_html=True)
 
     REQUIRED_COLS = [
@@ -1158,16 +1162,17 @@ with tab2:
     ]
 
     if uploaded is not None:
-        parse_failed = False
-        try:
-            batch_df = pd.read_csv(uploaded)
-        except Exception:
-            parse_failed = True
+        if not uploaded.name.lower().endswith(".csv"):
+            st.error("That doesn\u2019t look like a CSV file \u2014 please upload a file ending in .csv.")
             batch_df = None
-
-        if parse_failed:
-            st.error("Couldn\u2019t read that file \u2014 make sure it\u2019s a valid CSV.")
         else:
+            try:
+                batch_df = pd.read_csv(uploaded)
+            except Exception:
+                batch_df = None
+                st.error("Couldn\u2019t read that file \u2014 make sure it\u2019s a valid CSV.")
+
+        if batch_df is not None:
             missing = [c for c in REQUIRED_COLS if c not in batch_df.columns]
             if missing:
                 st.error(f"Missing required column(s): {', '.join(missing)}. Use the template above for the expected format.")
