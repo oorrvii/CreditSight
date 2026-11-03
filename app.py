@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import shap
@@ -910,7 +909,8 @@ with tab1:
     if st.button("Calculate my score \u2192"):
         st.session_state.score_calculated = True
         st.session_state.just_calculated = True
-
+    summary_slot = st.empty()
+    
     # =========================================================
     # GAUGE SVG BUILDER
     # =========================================================
@@ -978,16 +978,6 @@ with tab1:
         st.markdown('<div id="result-top"></div>', unsafe_allow_html=True)
         if st.session_state.just_calculated:
             st.session_state.just_calculated = False
-            if st.session_state.just_calculated:
-             st.session_state.just_calculated = False
-            components.html(
-                """
-                <script>
-                ...
-                </script>
-                """,
-                height=0,
-            )
             
         payment_regularity_score = (
             payment_irregularity_minor * 1
@@ -1027,6 +1017,12 @@ with tab1:
             risk_label, risk_color, risk_soft = "Moderate Risk", RISK_MED, RISK_MED_SOFT
         else:
             risk_label, risk_color, risk_soft = "High Risk", RISK_HIGH, RISK_HIGH_SOFT
+        summary_slot.markdown(
+            f'<div class="proba-line" style="text-align:left; margin-top:0.8rem;">'
+            f'Your score: <b style="color:{risk_color};">{credit_score}/100</b> \u00b7 {risk_label}. '
+            f'Scroll down for the full breakdown.</div>',
+            unsafe_allow_html=True,
+        )
 
         sv = explainer(row)
 
