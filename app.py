@@ -978,15 +978,17 @@ with tab1:
         st.markdown('<div id="result-top"></div>', unsafe_allow_html=True)
         if st.session_state.just_calculated:
             st.session_state.just_calculated = False
+            if st.session_state.just_calculated:
+             st.session_state.just_calculated = False
             components.html(
                 """
                 <script>
-                    var el = window.parent.document.getElementById('result-top');
-                    if (el) { el.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+                ...
                 </script>
                 """,
                 height=0,
             )
+            
         payment_regularity_score = (
             payment_irregularity_minor * 1
             + payment_irregularity_moderate * 2
